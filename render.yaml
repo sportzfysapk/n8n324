@@ -1,0 +1,57 @@
+databases:
+  - name: n8n-db
+    plan: free
+    databaseName: n8n
+    user: n8nuser
+
+services:
+  - type: web
+    name: n8n324
+    env: docker
+    plan: free
+    dockerfilePath: ./Dockerfile
+    autoDeploy: true
+    envVars:
+      # Database connection
+      - key: DB_TYPE
+        value: postgresdb
+      - key: DB_POSTGRESDB_DATABASE
+        fromDatabase:
+          name: n8n-db
+          property: database
+      - key: DB_POSTGRESDB_HOST
+        fromDatabase:
+          name: n8n-db
+          property: host
+      - key: DB_POSTGRESDB_PORT
+        fromDatabase:
+          name: n8n-db
+          property: port
+      - key: DB_POSTGRESDB_USER
+        fromDatabase:
+          name: n8n-db
+          property: user
+      - key: DB_POSTGRESDB_PASSWORD
+        fromDatabase:
+          name: n8n-db
+          property: password
+
+      # Authentication
+      - key: N8N_BASIC_AUTH_ACTIVE
+        value: "true"
+      - key: N8N_BASIC_AUTH_USER
+        value: "admin"
+      - key: N8N_BASIC_AUTH_PASSWORD
+        value: "changeme123"
+
+      # Security
+      - key: N8N_ENCRYPTION_KEY
+        generateValue: true
+
+      # Webhook URL
+      - key: WEBHOOK_URL
+        value: "https://n8n324.onrender.com/"
+
+      # AI Agent API key (you’ll set this in Render dashboard later)
+      - key: OPENAI_API_KEY
+        sync: false
